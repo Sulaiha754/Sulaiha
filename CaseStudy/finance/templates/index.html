@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Register</title>
+
+    <!-- Google Font: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 350px;
+            background: #fff;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .container h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-box {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .input-box input {
+            width: 100%;
+            padding: 0.8rem 2.5rem 0.8rem 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .input-box i {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            background: #4c83f1;
+            color: white;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .toggle-msg {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .toggle-msg span {
+            color: #4c83f1;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .flash {
+            margin-bottom: 10px;
+            padding: 0.7rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .flash.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .flash.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <h2 id="form-title">Login</h2>
+
+    <form method="POST" id="authForm">
+        <input type="hidden" name="form_type" id="form_type" value="login">
+
+        <div class="input-box" id="usernameBox" style="display: none;">
+            <input type="text" name="username" placeholder="Username">
+            <i class='bx bx-user'></i>
+        </div>
+
+        <div class="input-box">
+            <input type="email" name="email" placeholder="Email" required>
+            <i class='bx bx-envelope'></i>
+        </div>
+
+        <div class="input-box">
+            <input type="password" name="password" placeholder="Password" required>
+            <i class='bx bx-lock-alt'></i>
+        </div>
+
+        <button class="btn" type="submit" id="submitBtn">Login</button>
+
+        <div class="toggle-msg">
+            <p id="toggleText">Don't have an account? <span onclick="toggleForm()">Register</span></p>
+        </div>
+    </form>
+</div>
+
+<script>
+    let isLogin = true;
+
+    function toggleForm() {
+        isLogin = !isLogin;
+
+        document.getElementById('form-title').innerText = isLogin ? "Login" : "Register";
+        document.getElementById('form_type').value = isLogin ? "login" : "register";
+        document.getElementById('submitBtn').innerText = isLogin ? "Login" : "Register";
+        document.getElementById('toggleText').innerHTML = isLogin ?
+            "Don't have an account? <span onclick='toggleForm()'>Register</span>" :
+            "Already have an account? <span onclick='toggleForm()'>Login</span>";
+
+        document.getElementById('usernameBox').style.display = isLogin ? "none" : "block";
+    }
+</script>
+
+</body>
+</html>
