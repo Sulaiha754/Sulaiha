@@ -1,2 +1,3 @@
 # Sulaiha
-added Techsop- completed and HMbank Assignments
+Assignment update :
+Techsop(mssql)  and HMbank Assignments completed(python,mssql)
