@@ -1,3 +1,5 @@
 # Sulaiha
-Assignment update :
-Techsop(python,mssql)  and HMbank Assignments completed(python,mssql)
+Assignment completion update :
+Techsop(python,mssql) 
+HMbank Assignments (python,mssql)
+Student Information System(python,mssql)
