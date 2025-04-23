@@ -1,8 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from db_config import get_connection
+import os
 
-app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # For session management
+# Ensure Flask knows where to look for templates
+template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
+app = Flask(__name__, template_folder=template_dir)
+app.secret_key = 'your_secret_key'
+
 
 
 # Combined Login/Register Page
