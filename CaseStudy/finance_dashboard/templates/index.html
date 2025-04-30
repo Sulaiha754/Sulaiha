@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Tracker Dashboard</title>
+  <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f5f7fa;
+  color: #333;
+}
+
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  width: 250px;
+  background: #ffffff;
+  padding: 2rem 1.5rem;
+  border-right: 1px solid #e0e0e0;
+}
+
+.sidebar .profile {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.sidebar .profile img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #7b47ff;
+}
+
+.sidebar h3 {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+}
+
+.sidebar nav ul {
+  list-style: none;
+  margin-top: 2rem;
+}
+
+.sidebar nav ul li {
+  padding: 12px 15px;
+  margin: 8px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sidebar nav ul li.active,
+.sidebar nav ul li:hover {
+  background-color: #7b47ff;
+  color: white;
+}
+
+/* Main Content Styles */
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  background: #f5f7fa;
+}
+
+.content-section {
+  display: none;
+}
+
+.content-section.active {
+  display: block;
+}
+
+/* Dashboard Styles */
+.dashboard {
+  width: 100%;
+}
+
+/* Cards Layout */
+.cards {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  flex: 1;
+  padding: 1.5rem;
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 8px;
+}
+
+.card h4 {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.card p {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.card.purple {
+  background: linear-gradient(135deg, #7b47ff 0%, #9254ff 100%);
+}
+
+.card.orange {
+  background: linear-gradient(135deg, #ff5722 0%, #ff7043 100%);
+}
+
+.card.red {
+  background: linear-gradient(135deg, #f44336 0%, #f6685e 100%);
+}
+
+/* Bottom Section Layout */
+.bottom-section {
+  display: flex;
+  gap: 1.5rem;
+}
+
+/* Transactions Styles */
+.transactions {
+  flex: 1;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+}
+
+.transactions h4 {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.transactions ul {
+  list-style: none;
+}
+
+.transactions ul li {
+  display: flex;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.transactions ul li:last-child {
+  border-bottom: none;
+}
+
+.transaction-icon {
+  width: 28px;
+  height: 28px;
+  margin-right: 12px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.transactions ul li span:first-of-type {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.transactions ul li span:last-child {
+  font-weight: 600;
+  min-width: 90px;
+  text-align: right;
+}
+
+/* Chart Container Styles */
+.chart-container {
+  width: 350px;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+}
+
+.chart-container h4 {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Income/Expense Pages Styles */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.page-header h2 {
+  font-size: 1.5rem;
+}
+
+.btn-add {
+  background: #7b47ff;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.btn-add:hover {
+  background: #6a3ce8;
+}
+
+.income-list,
+.expense-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.income-item,
+.expense-item {
+  background: white;
+  padding: 1.2rem 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.item-main-content {
+  flex: 1;
+}
+
+.item-footer {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.amount-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.income-item .amount {
+  color: #4CAF50;
+  font-weight: 600;
+  font-size: 1.1rem;
+  min-width: 80px;
+  text-align: right;
+}
+
+.expense-item .amount {
+  color: #f44336;
+  font-weight: 600;
+  font-size: 1.1rem;
+  min-width: 80px;
+  text-align: right;
+}
+
+.item-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-view,
+.btn-edit {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-view {
+  background-color: #2196F3;
+  color: white;
+}
+
+.btn-edit {
+  background-color: #FFC107;
+  color: #333;
+}
+
+.btn-view:hover {
+  background-color: #0b7dda;
+}
+
+.btn-edit:hover {
+  background-color: #e0a800;
+}
+
+/* Form Styles */
+#add-income-form,
+#add-expense-form {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+  margin-top: 2rem;
+}
+
+#add-income-form h3,
+#add-expense-form h3 {
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+}
+
+form input {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+form button[type="submit"] {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+form button[type="button"] {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.edit-form {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f0f0f0;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.edit-form input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+.edit-form button {
+  width: fit-content;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-delete {
+  background-color: #f44336;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.btn-delete:hover {
+  background-color: #c62828;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .bottom-section {
+    flex-direction: column;
+  }
+  
+  .chart-container {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    height: auto;
+    padding: 1.5rem;
+  }
+  
+  .main-content {
+    padding: 1.5rem;
+  }
+  
+  .cards {
+    flex-direction: column;
+  }
+
+  .income-item,
+  .expense-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .item-footer {
+    width: 100%;
+    justify-content: space-between;
+  }
+}</style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// === Transaction Data ===
+const transactions = [
+  { label: "Shopping", date: "17th Feb 2025", amount: -430, icon: "shopping-cart" },
+  { label: "Travel", date: "13th Feb 2025", amount: -670, icon: "travel1" },
+  { label: "Salary", date: "12th Feb 2025", amount: 12000, icon: "salary" },
+  { label: "Loan Repayment", date: "10th Feb 2025", amount: -600, icon: "loan" },
+  { label: "Electricity Bill", date: "11th Feb 2025", amount: -200, icon: "electricity" }
+];
+
+// === Sample Data ===
+let incomes = [
+  { id: 1, category: "Salary", amount: 12000, date: "2025-02-12", description: "Monthly salary payment" },
+  { id: 2, category: "Freelance", amount: 1500, date: "2025-02-18", description: "Website development project" }
+];
+
+let expenses = [
+  { id: 1, category: "Shopping", amount: 430, date: "2025-02-17", description: "Grocery shopping at Walmart" },
+  { id: 2, category: "Travel", amount: 670, date: "2025-02-13", description: "Flight tickets for vacation" }
+];
+
+// === Utils ===
+const formatCurrency = amount =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount);
+
+const formatDate = dateStr =>
+  new Date(dateStr).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+
+// === Render Transactions ===
+const renderTransactions = () => {
+  const list = document.getElementById("transaction-list");
+  list.innerHTML = "";
+  transactions.forEach(tx => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <img src="templates/assets/${tx.icon}.jpg" alt="${tx.label}" class="transaction-icon">
+      <span>${tx.label} (${tx.date})</span>
+      <span style="color: ${tx.amount < 0 ? '#f44336' : '#4CAF50'}">
+        ${tx.amount < 0 ? '-' : '+'}${formatCurrency(Math.abs(tx.amount))}
+      </span>
+    `;
+    list.appendChild(li);
+  });
+};
+
+// === Donut Chart ===
+const initChart = () => {
+  const ctx = document.getElementById('donutChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Total Balance', 'Total Expenses', 'Total Income'],
+      datasets: [{
+        data: [91100, 7100, 98200],
+        backgroundColor: ['#7b47ff', '#f44336', '#ff5722']
+      }]
+    },
+    options: {
+      cutout: '70%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            usePointStyle: true,
+            pointStyle: 'circle',
+            font: { size: 12 }
+          }
+        }
+      }
+    }
+  });
+};
+
+// === Navigation ===
+function showSection(sectionId) {
+  document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sidebar nav ul li').forEach(li => li.classList.remove('active'));
+  document.getElementById(`${sectionId}-section`).classList.add('active');
+  document.querySelector(`.sidebar nav ul li:nth-child(${sectionId === 'dashboard' ? 1 : sectionId === 'income' ? 2 : sectionId === 'expense' ? 3 : 4})`).classList.add('active');
+  if (sectionId === 'income') renderIncomes();
+  if (sectionId === 'expense') renderExpenses();
+}
+
+
+
+
+// === Income Management ===
+function renderIncomes() {
+  const list = document.querySelector('.income-list');
+  list.innerHTML = '';
+  incomes.forEach(income => {
+    const div = document.createElement('div');
+    div.className = 'income-item';
+    div.innerHTML = `
+      <div class="item-main-content">
+        <h3>${income.category}</h3>
+        <p class="date">${formatDate(income.date)}</p>
+        ${income.description ? `<p class="description">${income.description}</p>` : ''}
+      </div>
+      <div class="item-footer">
+        <div class="amount-container">
+          <span class="amount">+${formatCurrency(income.amount)}</span>
+        </div>
+        <div class="item-actions">
+          <button class="btn-edit" onclick="toggleIncomeEdit(${income.id})">Edit</button>
+          <button class="btn-delete" onclick="deleteIncome(${income.id})">Delete</button>
+        </div>
+      </div>
+      <form class="edit-form" id="income-edit-${income.id}" onsubmit="submitIncomeEdit(event, ${income.id})" style="display:none;">
+        <input type="text" name="category" value="${income.category}" required />
+        <input type="number" name="amount" value="${income.amount}" required />
+        <input type="date" name="date" value="${income.date}" required />
+        <input type="text" name="description" value="${income.description || ''}" />
+        <button type="submit">Update</button>
+        <button type="button" onclick="toggleIncomeEdit(${income.id})">Cancel</button>
+      </form>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function toggleIncomeEdit(id) {
+  const form = document.getElementById(`income-edit-${id}`);
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+function submitIncomeEdit(e, id) {
+  e.preventDefault();
+  const form = e.target;
+  const index = incomes.findIndex(i => i.id === id);
+  incomes[index] = {
+    id,
+    category: form.category.value,
+    amount: parseFloat(form.amount.value),
+    date: form.date.value,
+    description: form.description.value
+  };
+  renderIncomes();
+}
+
+function deleteIncome(id) {
+  incomes = incomes.filter(i => i.id !== id);
+  renderIncomes();
+}
+
+// === Expense Management ===
+function renderExpenses() {
+  const list = document.querySelector('.expense-list');
+  list.innerHTML = '';
+  expenses.forEach(expense => {
+    const div = document.createElement('div');
+    div.className = 'expense-item';
+    div.innerHTML = `
+      <div class="item-main-content">
+        <h3>${expense.category}</h3>
+        <p class="date">${formatDate(expense.date)}</p>
+        ${expense.description ? `<p class="description">${expense.description}</p>` : ''}
+      </div>
+      <div class="item-footer">
+        <div class="amount-container">
+          <span class="amount">-${formatCurrency(expense.amount)}</span>
+        </div>
+        <div class="item-actions">
+          <button class="btn-edit" onclick="toggleExpenseEdit(${expense.id})">Edit</button>
+          <button class="btn-delete" onclick="deleteExpense(${expense.id})">Delete</button>
+        </div>
+      </div>
+      <form class="edit-form" id="expense-edit-${expense.id}" onsubmit="submitExpenseEdit(event, ${expense.id})" style="display:none;">
+        <input type="text" name="category" value="${expense.category}" required />
+        <input type="number" name="amount" value="${expense.amount}" required />
+        <input type="date" name="date" value="${expense.date}" required />
+        <input type="text" name="description" value="${expense.description || ''}" />
+        <button type="submit">Update</button>
+        <button type="button" onclick="toggleExpenseEdit(${expense.id})">Cancel</button>
+      </form>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function toggleExpenseEdit(id) {
+  const form = document.getElementById(`expense-edit-${id}`);
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+function submitExpenseEdit(e, id) {
+  e.preventDefault();
+  const form = e.target;
+  const index = expenses.findIndex(exp => exp.id === id);
+  expenses[index] = {
+    id,
+    category: form.category.value,
+    amount: parseFloat(form.amount.value),
+    date: form.date.value,
+    description: form.description.value
+  };
+  renderExpenses();
+}
+
+function deleteExpense(id) {
+  expenses = expenses.filter(exp => exp.id !== id);
+  renderExpenses();
+}
+
+// === Add Forms ===
+function showAddIncomeForm() {
+  document.getElementById('add-income-form').style.display = 'block';
+}
+
+function hideAddIncomeForm() {
+  document.getElementById('add-income-form').style.display = 'none';
+}
+
+function addIncome(e) {
+  e.preventDefault();
+  const form = e.target;
+  incomes.push({
+    id: incomes.length + 1,
+    category: form[0].value,
+    amount: parseFloat(form[1].value),
+    date: form[2].value,
+    description: form[3].value
+  });
+  renderIncomes();
+  hideAddIncomeForm();
+  form.reset();
+}
+
+function showAddExpenseForm() {
+  document.getElementById('add-expense-form').style.display = 'block';
+}
+
+function hideAddExpenseForm() {
+  document.getElementById('add-expense-form').style.display = 'none';
+}
+
+function addExpense(e) {
+  e.preventDefault();
+  const form = e.target;
+  expenses.push({
+    id: expenses.length + 1,
+    category: form[0].value,
+    amount: parseFloat(form[1].value),
+    date: form[2].value,
+    description: form[3].value
+  });
+  renderExpenses();
+  hideAddExpenseForm();
+  form.reset();
+}
+
+// === Initialize ===
+document.addEventListener('DOMContentLoaded', () => {
+  renderTransactions();
+  initChart();
+  showSection('dashboard');
+  const today = new Date().toISOString().split('T')[0];
+  document.querySelectorAll('input[type="date"]').forEach(input => input.value = today);
+});
+</script>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="profile">
+        <img src="templates/assets/avatar-icon-8.jpg" alt="Profile">
+        <h3>Welcome !!</h3>
+      </div>
+      <nav>
+        <ul>
+          <li class="active" onclick="showSection('dashboard')">Dashboard</li>
+          <li onclick="showSection('income')">Income</li>
+          <li onclick="showSection('expense')">Expense</li>
+          <form action="/logout" method="post" style="display:inline;">
+            <button type="submit" style="background:none; border:none; color:#333;font-family:arial;text-decoration:none; cursor:pointer;">
+                Logout
+            </button>
+        </form>
+        
+     
+      
+    
+
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Dashboard Section -->
+      <section id="dashboard-section" class="content-section active">
+        <div class="dashboard">
+          <!-- Top Cards -->
+          <div class="cards">
+            <div class="card purple">
+              <div class="card-header">
+                <img src="templates/assets/balance.jpg" alt="Balance" class="card-icon">
+                <h4>Total Balance</h4>
+              </div>
+              <p>$91,100</p>
+            </div>
+            <div class="card orange">
+              <div class="card-header">
+                <img src="templates/assets/income.jpg" alt="Income" class="card-icon">
+                <h4>Total Income</h4>
+              </div>
+              <p>$98,200</p>
+            </div>
+            <div class="card red">
+              <div class="card-header">
+                <img src="templates/assets/expense.jpg" alt="Expense" class="card-icon">
+                <h4>Total Expenses</h4>
+              </div>
+              <p>$7,100</p>
+            </div>
+          </div>
+
+          <!-- Transactions & Chart -->
+          <div class="bottom-section">
+            <!-- Recent Transactions -->
+            <div class="transactions">
+              <h4>Recent Transactions</h4>
+              <ul id="transaction-list">
+                <li>
+                  <img src="templates/assets/shopping-cart.jpg" alt="Shopping" class="transaction-icon">
+                  <span>Shopping (17th Feb 2025)</span>
+                  <span style="color: #f44336;">-$430</span>
+                </li>
+                <li>
+                  <img src="templates/assets/travel1.jpg" alt="Travel" class="transaction-icon">
+                  <span>Travel (13th Feb 2025)</span>
+                  <span style="color: #f44336;">-$670</span>
+                </li>
+                <li>
+                  <img src="templates/assets/salary.jpg" alt="Salary" class="transaction-icon">
+                  <span>Salary (12th Feb 2025)</span>
+                  <span style="color: #4CAF50;">+$12,000</span>
+                </li>
+                <li>
+                  <img src="templates/assets/loan.jpg" alt="Loan Repayment" class="transaction-icon">
+                  <span>Loan Repayment (10th Feb 2025)</span>
+                  <span style="color: #f44336;">-$600</span>
+                </li>
+                <li>
+                  <img src="templates/assets/electricity.jpg" alt="Electricity Bill" class="transaction-icon">
+                  <span>Electricity Bill (11th Feb 2025)</span>
+                  <span style="color: #f44336;">-$200</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Financial Overview Chart -->
+            <div class="chart-container">
+              <h4>Financial Overview</h4>
+              <canvas id="donutChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Income Section -->
+      <section id="income-section" class="content-section">
+        <div class="page-header">
+          <h2>Income Management</h2>
+          <button class="btn-add" onclick="showAddIncomeForm()">+ Add Income</button>
+        </div>
+        <div class="income-list">
+          <!-- Content loaded dynamically -->
+        </div>
+        <div id="add-income-form" style="display: none;">
+          <h3>Add New Income</h3>
+          <form onsubmit="addIncome(event)">
+            <input type="text" placeholder="Income Category" required>
+            <input type="number" placeholder="Amount" required>
+            <input type="date" required>
+            <input type="text" placeholder="Description">
+            <button type="submit">Save</button>
+            <button type="button" onclick="hideAddIncomeForm()">Cancel</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Expense Section -->
+      <section id="expense-section" class="content-section">
+        <div class="page-header">
+          <h2>Expense Management</h2>
+          <button class="btn-add" onclick="showAddExpenseForm()">+ Add Expense</button>
+        </div>
+        <div class="expense-list">
+          <!-- Content loaded dynamically -->
+        </div>
+        <div id="add-expense-form" style="display: none;">
+          <h3>Add New Expense</h3>
+          <form onsubmit="addExpense(event)">
+            <input type="text" placeholder="Expense Category" required>
+            <input type="number" placeholder="Amount" required>
+            <input type="date" required>
+            <input type="text" placeholder="Description">
+            <button type="submit">Save</button>
+            <button type="button" onclick="hideAddExpenseForm()">Cancel</button>
+          </form>
+        </div>
+      </section>
+    </div>
+  </div>
+</body>
+</html>
+
+   
